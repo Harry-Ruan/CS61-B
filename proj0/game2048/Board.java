@@ -30,11 +30,11 @@ public class Board implements Iterable<Tile> {
      * (0 is null) with a current score of SCORE and the viewing perspective set to north. */
     public Board(int[][] rawValues, int score) {
         int size = rawValues.length;
-        values = new Tile[size][size];
+        values = new Tile[size][size]; /** column or row size, not the whole size */
         viewPerspective = Side.NORTH;
         for (int col = 0; col < size; col += 1) {
             for (int row = 0; row < size; row += 1) {
-                int value = rawValues[size - 1 - row][col];
+                int value = rawValues[size - 1 - row][col]; /** to correspond the north view perspective */
                 Tile tile;
                 if (value == 0) {
                     tile = null;
@@ -153,4 +153,28 @@ public class Board implements Iterable<Tile> {
         return new AllTileIterator();
     }
 
+    private boolean check_neighbor(int col, int row){
+        if(this.tile(col, row) == null){
+            return false;
+        }
+        int value = this.tile(col ,row).value();
+        for (Tile t : this){
+            if (t == null){
+                continue;
+            }
+            int col1 = t.col();
+            int row1 = t.row();
+            if (t.value() == value)
+            {
+                if ((col - 1 == col1 && row == row1) || (col + 1 == col1 && row == row1) || (col == col1 && row - 1 == row1) || (col == col1 && row + 1 == row1)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean hasSameAdjacent(int col, int row){
+        return this.check_neighbor(col, row);
+    }
 }
