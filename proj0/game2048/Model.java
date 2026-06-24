@@ -241,11 +241,25 @@ public class Model extends Observable {
             for (Tile tile : b) {
                 if (tile == null) {
                     continue;
-                } else {
+                }
+                else {
                     int column = tile.col();
                     int row = tile.row();
-                    if(b.hasSameAdjacent(column, row)) {
-                        return true;
+                    if(b.tile(column, row) != null){
+                        int value = b.tile(column ,row).value();
+                        for (Tile t : b){
+                        if (t == null){
+                            continue;
+                        }
+                        int col1 = t.col();
+                        int row1 = t.row();
+                        if (t.value() == value)
+                        {
+                            if ((column - 1 == col1 && row == row1) || (column + 1 == col1 && row == row1) || (column == col1 && row - 1 == row1) || (column == col1 && row + 1 == row1)){
+                                return true;
+                            }
+                        }
+                        }
                     }
                 }
             }
@@ -291,4 +305,5 @@ public class Model extends Observable {
     public int hashCode() {
         return toString().hashCode();
     }
+
 }
