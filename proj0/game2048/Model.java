@@ -107,10 +107,14 @@ public class Model extends Observable {
      *    and the trailing tile does not.
      * */
     public boolean tilt(Side side) {
-        boolean changed;
-        changed = false;
-
-        // TODO: Modify this.board (and perhaps this.score) to account
+        board.setViewingPerspective(side);
+        boolean changed = false;
+        for (int col = 0; col < board.size(); col++) {
+            if (tiltColumn(col)) {
+                changed = true;
+            }
+        }
+  // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
@@ -118,8 +122,59 @@ public class Model extends Observable {
         if (changed) {
             setChanged();
         }
+        board.setViewingPerspective(Side.NORTH);
         return changed;
     }
+
+    private boolean tiltColumn(int col){
+        boolean columnChanged = false;
+        boolean[] mergeData = new boolean[board.size()];
+        for (int row = board.size() - 1; row >= 0 ; row--){
+            if (board.tile(col, row) == null){
+                continue;
+            }
+            else{
+                columnChanged = tiltEntry(col, row, mergeData) || columnChanged;
+            }
+        }
+        return columnChanged;
+    }
+
+    private int checkBlank(int col, int row){
+        int blank = 0;
+        int startRow = row;
+        for (int checkBlank = startRow; checkBlank < board.size() ; checkBlank++){
+            if (board.tile(col, checkBlank) == null){
+                blank += 1;
+            }
+        }
+        return blank;
+    }
+
+    private boolean tiltEntry(int col, int row, boolean[] mergeData){
+        int step = checkBlank(col, row);
+        if (row + step + 1 < board.size()){
+            Tile target = board.tile(col, (row + step + 1));
+            if (target.value() == board.tile(col, row).value() && !mergeData[row + step + 1]) {
+                step += 1;
+                mergeData[row + step] = board.move(col, (row + step), board.tile(col, row));
+                this.score += 2 * target.value();
+            }
+            else{
+                board.move(col, row + step, board.tile(col, row));
+            }
+        }
+        else{
+            board.move(col, row + step, board.tile(col, row));
+            }
+        if (step == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
