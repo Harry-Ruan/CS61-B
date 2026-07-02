@@ -3,7 +3,6 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 
-import afu.org.checkerframework.checker.igj.qual.I;
 
 public class LinkedListDeque<Item> implements Iterable<Item>{
     private class ListNode {

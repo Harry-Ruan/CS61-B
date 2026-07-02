@@ -7,7 +7,7 @@ public class ArrayDeque<Item> {
     private Item[] items;
     private int FACTOR = 2;
 
-    ArrayDeque(){
+    public ArrayDeque(){
         size = 0;
         head = items.length;
         tail = 0;
