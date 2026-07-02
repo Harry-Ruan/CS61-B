@@ -20,7 +20,7 @@ public class LinkedListDeque<Item> implements Iterable<Item>{
     private ListNode sentinel;
     private int size;
 
-    LinkedListDeque(){
+    public LinkedListDeque(){
         sentinel = new ListNode(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
