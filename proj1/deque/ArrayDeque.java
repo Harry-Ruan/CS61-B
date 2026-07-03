@@ -10,7 +10,7 @@ public class ArrayDeque<Item> {
     public ArrayDeque(){
         size = 0;
         items = (Item[]) new Object[8];
-        head = items.length;
+        head = items.length - 1;
         tail = 0;
     }
 
@@ -79,7 +79,7 @@ public class ArrayDeque<Item> {
     private void resize(int capacity){
         Item[] newItems = (Item[]) new Object[capacity];
         System.arraycopy(items, head, newItems, 0, items.length - head);
-        System.arraycopy(items, 0, newItems, items.length - head -1, tail + 1);
+        System.arraycopy(items, 0, newItems, items.length - head, tail + 1);
         items = newItems;
     }
 }
