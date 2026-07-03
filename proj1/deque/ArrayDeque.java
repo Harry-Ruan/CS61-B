@@ -51,7 +51,10 @@ public class ArrayDeque<Item> {
     }
     public Item removeFirst(){
         if (size < items.length / 4){
-            resize(items.length / FACTOR);
+            int newLength = items.length / FACTOR;
+            head = newLength - items.length + head;
+            resize(newLength);
+
         }
         Item temp = items[head];
         head = (head + 1) % items.length;
@@ -73,7 +76,7 @@ public class ArrayDeque<Item> {
             return items[head + index];
         }
         else{
-            return items[index + head - items.length];
+            return items[index + head - items.length - 1];
         }
     }
     private void resize(int capacity){
