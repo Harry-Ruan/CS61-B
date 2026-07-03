@@ -9,9 +9,9 @@ public class ArrayDeque<Item> {
 
     public ArrayDeque(){
         size = 0;
+        items = (Item[]) new Object[8];
         head = items.length;
         tail = 0;
-        items = (Item[]) new Object[8];
     }
 
     public void addFirst(Item i){
