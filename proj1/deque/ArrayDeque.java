@@ -18,9 +18,13 @@ public class ArrayDeque<Item> {
         if (tail + 1 == head){
             resize(items.length * FACTOR);
         }
-        else{
+        else if (items[head] == null){
             items[head] = i;
-            head -= 1;
+            size += 1;
+        }
+        else{
+            head = (head - 1 + items.length) % items.length;
+            items[head] = i;
             size += 1;
         }
     }
@@ -28,9 +32,13 @@ public class ArrayDeque<Item> {
         if (tail + 1 == head){
             resize(items.length * FACTOR);
         }
-        else{
+        else if (items[tail] == null){
             items[tail] = i;
-            tail += 1;
+            size += 1;
+        }
+        else{
+            tail = (tail + 1) % items.length;
+            items[tail] = i;
             size += 1;
         }
 
@@ -76,13 +84,15 @@ public class ArrayDeque<Item> {
             return items[head + index];
         }
         else{
-            return items[index + head - items.length - 1];
+            return items[index + head - items.length];
         }
     }
     private void resize(int capacity){
         Item[] newItems = (Item[]) new Object[capacity];
         System.arraycopy(items, head, newItems, 0, items.length - head);
         System.arraycopy(items, 0, newItems, items.length - head, tail + 1);
+        head = items.length -1;
+        tail = size -1;
         items = newItems;
     }
 }
