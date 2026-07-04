@@ -1,6 +1,6 @@
 package deque;
 
-public class ArrayDeque<Item> {
+public class ArrayDeque<Item> implements Deque<Item> {
     private int size;
     private int head;
     private int tail;
@@ -10,41 +10,37 @@ public class ArrayDeque<Item> {
     public ArrayDeque(){
         size = 0;
         items = (Item[]) new Object[8];
-        head = items.length - 1;
+        head = 0;
         tail = 0;
     }
 
     public void addFirst(Item i){
-        if (tail + 1 == head){
+        if (size == items.length - 1){
             resize(items.length * FACTOR);
         }
-        else if (items[head] == null){
+        if (items[head] == null){
             items[head] = i;
             size += 1;
+            return;
         }
-        else{
+
             head = (head - 1 + items.length) % items.length;
             items[head] = i;
             size += 1;
-        }
+
     }
     public void addLast(Item i){
-        if (tail + 1 == head){
+        if (size == items.length - 1){
             resize(items.length * FACTOR);
         }
-        else if (items[tail] == null){
+        if (items[tail] == null){
             items[tail] = i;
             size += 1;
+            return;
         }
-        else{
             tail = (tail + 1) % items.length;
             items[tail] = i;
             size += 1;
-        }
-
-    }
-    public boolean isEmpty(){
-        return size == 0;
     }
     public int size(){
         return size;
@@ -58,22 +54,27 @@ public class ArrayDeque<Item> {
         }
     }
     public Item removeFirst(){
+        Item temp = items[head];
         if (size < items.length / 4){
             int newLength = items.length / FACTOR;
-            head = newLength - items.length + head;
             resize(newLength);
-
         }
-        Item temp = items[head];
-        head = (head + 1) % items.length;
+        else{
+            head = (head + 1) % items.length;
+        }
+        size -= 1;
         return temp;
     }
     public Item removeLast(){
-        if (size < items.length / 4){
-            resize(items.length / FACTOR);
-        }
         Item temp = items[tail];
-        tail = (tail - 1 + items.length) % items.length;
+        if (size < items.length / 4){
+            int newLength = items.length / FACTOR;
+            resize(newLength);
+        }
+        else{
+            tail = (tail - 1 + items.length) % items.length;
+        }
+        size -= 1;
         return temp;
     }
     public Item get(int index){
@@ -88,10 +89,18 @@ public class ArrayDeque<Item> {
         }
     }
     private void resize(int capacity){
+        if (capacity < size) {
+            throw new IllegalArgumentException("not sufficient capacity");
+        }
         Item[] newItems = (Item[]) new Object[capacity];
-        System.arraycopy(items, head, newItems, 0, items.length - head);
-        System.arraycopy(items, 0, newItems, items.length - head, tail + 1);
-        head = items.length -1;
+        if (head > tail){
+            System.arraycopy(items, head, newItems, 0, items.length - head);
+            System.arraycopy(items, 0, newItems, items.length - head, tail + 1);
+        }
+        else{
+            System.arraycopy(items, head, newItems, 0, tail - head + 1);
+        }
+        head = 0;
         tail = size -1;
         items = newItems;
     }

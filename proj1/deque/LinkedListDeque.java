@@ -1,10 +1,10 @@
 package deque;
-import java.util.Deque;
+
 import java.util.Iterator;
 import java.util.List;
 
 
-public class LinkedListDeque<Item> implements Iterable<Item>{
+public class LinkedListDeque<Item> implements Iterable<Item>, Deque<Item>{
     private class ListNode {
         private Item value;
         private ListNode next;
@@ -51,9 +51,6 @@ public class LinkedListDeque<Item> implements Iterable<Item>{
             sentinel.prev = last;
         }
         size += 1;
-    }
-    public boolean isEmpty() {
-        return (sentinel.next == sentinel);
     }
 
     public void printDeque(){
