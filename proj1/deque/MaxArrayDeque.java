@@ -4,22 +4,22 @@ import afu.org.checkerframework.checker.igj.qual.I;
 
 import java.util.Comparator;
 
-public class MaxArrayDeque<Item> extends ArrayDeque{
-    private Comparator<Item> myComparator;
+public class MaxArrayDeque<T> extends ArrayDeque{
+    private Comparator<T> myComparator;
 
-    public MaxArrayDeque(Comparator<Item> c){
+    public MaxArrayDeque(Comparator<T> c){
         super();
         myComparator = c;
     }
 
 
-    public Item max(Comparator<Item> c){
-        Item maximum = (Item) get(0);
+    public T max(Comparator<T> c){
+        T maximum = (T) get(0);
         if (isEmpty()){
             return null;
         }
         for (int i = 1; i < size(); i++){
-            Item I = (Item) get(i);
+            T I = (T) get(i);
             if (c.compare(maximum, I) < 0){
                 maximum = I;
             }
@@ -27,7 +27,7 @@ public class MaxArrayDeque<Item> extends ArrayDeque{
         return maximum;
     }
 
-    public Item max(){
+    public T max(){
         return max(myComparator);
     }
 }
