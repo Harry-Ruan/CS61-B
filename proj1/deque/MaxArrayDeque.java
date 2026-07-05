@@ -1,10 +1,8 @@
 package deque;
 
-import afu.org.checkerframework.checker.igj.qual.I;
-
 import java.util.Comparator;
 
-public class MaxArrayDeque<T> extends ArrayDeque{
+public class MaxArrayDeque<T> extends ArrayDeque<T>{
     private Comparator<T> myComparator;
 
     public MaxArrayDeque(Comparator<T> c){
@@ -14,7 +12,7 @@ public class MaxArrayDeque<T> extends ArrayDeque{
 
 
     public T max(Comparator<T> c){
-        T maximum = (T) get(0);
+        T maximum =  get(0);
         if (isEmpty()){
             return null;
         }
