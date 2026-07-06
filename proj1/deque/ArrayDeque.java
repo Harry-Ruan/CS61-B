@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private int size;
-    public int head;
-    public int tail;
+    private int head;
+    private int tail;
     private T[] items;
     private int FACTOR = 2;
 
@@ -149,7 +149,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             } else {
                 int bothSize = this.size();
                 for (int i = 0; i < bothSize; i++) {
-                    if (this.get(i).equals(other.get(i))) {
+                    if (!this.get(i).equals(other.get(i))) {
                         return false;
                     }
                 }
