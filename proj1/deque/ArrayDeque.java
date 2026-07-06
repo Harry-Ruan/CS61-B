@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private int size;
-    private int head;
-    private int tail;
+    public int head;
+    public int tail;
     private T[] items;
     private int FACTOR = 2;
 
@@ -17,31 +17,24 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
 
     public void addFirst(T i) {
-        if (size == items.length - 1) {
+        if (size == items.length) {
             resize(items.length * FACTOR);
         }
-        if (items[head] == null) {
-            items[head] = i;
-            size += 1;
-            return;
+        if (size > 0) {
+            head = (head - 1 + items.length) % items.length;
         }
-
-        head = (head - 1 + items.length) % items.length;
         items[head] = i;
         size += 1;
 
     }
 
     public void addLast(T i) {
-        if (size == items.length - 1) {
+        if (size == items.length) {
             resize(items.length * FACTOR);
         }
-        if (items[tail] == null) {
-            items[tail] = i;
-            size += 1;
-            return;
+        if (size > 0) {
+            tail = (tail + 1) % items.length;
         }
-        tail = (tail + 1) % items.length;
         items[tail] = i;
         size += 1;
     }
@@ -51,36 +44,49 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
 
     public void printDeque() {
-        for (int i = head; i < items.length; i++) {
-            System.out.print(items[i] + " ");
+        for (int i = 0; i < size; i++) {
+            System.out.print(get(i) + " ");
         }
-        for (int i = 0; i <= tail; i++) {
-            System.out.print(items[i] + " ");
-        }
+        System.out.println();
     }
 
     public T removeFirst() {
+        if (size == 0){
+            return null;
+        }
         T temp = items[head];
-        if (size < items.length / 4) {
-            int newLength = items.length / FACTOR;
-            resize(newLength);
-        } else {
+        items[head] = null;
+        size -= 1;
+        if (size > 0){
             head = (head + 1) % items.length;
         }
-        size -= 1;
+        if (size > 8 && size < items.length / 4) {
+            int newLength = items.length / FACTOR;
+            resize(newLength);
+        }
+
         return temp;
     }
 
     public T removeLast() {
+        if (size == 0) {
+            return null;
+        }
         T temp = items[tail];
-        if (size < items.length / 4) {
-            int newLength = items.length / FACTOR;
-            resize(newLength);
-        } else {
+        items[tail] = null; // 释放内存
+        size -= 1;
+
+        if (size > 0) {
             tail = (tail - 1 + items.length) % items.length;
         }
-        size -= 1;
+
+
+        // 缩容判断
+        if (items.length > 8 && size < items.length / 4) {
+            resize(items.length / FACTOR);
+        }
         return temp;
+
     }
 
     public T get(int index) {
@@ -119,7 +125,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
         @Override
         public boolean hasNext() {
-            return (cnt == size);
+            return (cnt < size);
         }
 
         @Override
@@ -143,7 +149,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             } else {
                 int bothSize = this.size();
                 for (int i = 0; i < bothSize; i++) {
-                    if (this.get(i) != other.get(i)) {
+                    if (this.get(i).equals(other.get(i))) {
                         return false;
                     }
                 }
