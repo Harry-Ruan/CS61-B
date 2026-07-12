@@ -123,10 +123,16 @@ public class ULLMap<K, V>  implements Map61B<K, V> {
             return ret;
         }
 
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
         /** Stores the current key-value pair. */
         private Entry cur;
 
     }
+
 
     @Override
     public V remove(K key) {
