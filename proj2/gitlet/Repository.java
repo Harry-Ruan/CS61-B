@@ -73,7 +73,7 @@ public class Repository {
     }
 
     private String initialCommit(){
-        Commit init = new Commit("initial commit", new Date(0).toString(), "", "", new TreeMap<>());
+        Commit init = new Commit("initial commit", "Thu Jan 1 00:00:00 1970 +0800", "", "", new TreeMap<>());
         String hash = init.getHash();
         init.saveCommit(hash);
         return hash;
@@ -119,7 +119,7 @@ public class Repository {
             System.out.println("No changes added to the commit.");
         }
         /** check message */
-        if (message == null){
+        if (message.equals("")){
             System.out.println("Please enter a commit message.");
             return;
         }
@@ -128,7 +128,7 @@ public class Repository {
         Map<String, String> added = stage.getAdded();
         Set<String> removed = stage.getRemoved();
 
-        Commit newCommit = new Commit(message, new Date().toString(), getHeadHash(), "", blobs);
+        Commit newCommit = new Commit(message, getTime(), getHeadHash(), "", blobs);
 
         /** for every files in added, add then to blobs */
         for (Map.Entry<String, String> addedEntry : added.entrySet()) {
@@ -147,7 +147,13 @@ public class Repository {
     }
 
     public void rm(String filename){
+        Commit head = getHead();
         Stage stage = getStage();
+        /** check if tracked */
+        if (!(stage.fileStaged(filename) || head.blobExist(filename))){
+            System.out.println("No reason to remove the file.");
+            return;
+        }
         /** unstaged from added */
         stage.removeAdded(filename);
         /** add it to removed if headcommit contains it */
@@ -187,7 +193,7 @@ public class Repository {
         Boolean found = false;
         for (String fileName : plainFiles){
             Commit commit = readObject(join(COMMITS, fileName), Commit.class);
-            if (commit.getMessage() == message){
+            if (commit.getMessage().equals(message)){
                 System.out.print(fileName);
                 found = true;
             }
@@ -532,5 +538,11 @@ public class Repository {
 
     private String getHeadBranch(){
         return readContentsAsString(HEAD);
+    }
+
+    private String getTime(){
+        java.time.ZonedDateTime now = java.time.ZonedDateTime.now();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("EEE MMM d HH:mm:ss yyyy Z", java.util.Locale.US);
+        return now.format(formatter);
     }
 }
