@@ -31,10 +31,6 @@ public class Main {
             case "rm":
                 /* If the file is neither staged nor tracked by the head commit */
                 String rmFilename = args[1];
-                if (!gitletRepo.fileTracked(rmFilename)){
-                    System.out.println("No reason to remove the file.");
-                    break;
-                }
                 gitletRepo.rm(rmFilename);
                 break;
             case "log":
@@ -54,9 +50,15 @@ public class Main {
                     gitletRepo.checkoutBranch(args[1]);
                 }
                 else if (args.length == 3){
+                    if (!args[1].equals("--")){
+                        System.out.println("Incorrect operands.");
+                    }
                     gitletRepo.checkoutHeadFile(args[2]);
                 }
                 else if (args.length == 4){
+                    if (!args[2].equals("--")){
+                        System.out.println("Incorrect operands.");
+                    }
                     gitletRepo.checkoutFile(args[1], args[3]);
                 }
                 break;

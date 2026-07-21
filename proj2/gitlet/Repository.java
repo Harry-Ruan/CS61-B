@@ -43,10 +43,7 @@ public class Repository {
 
     public void init(){
         /** check if initialized */
-        if (initialized()){
-            System.out.println("already initialized");
-        }
-        if (!GITLET_DIR.exists()){
+        if (!initialized()){
             GITLET_DIR.mkdir();
         }
         else {
@@ -147,17 +144,18 @@ public class Repository {
     }
 
     public void rm(String filename){
-        Commit head = getHead();
         Stage stage = getStage();
         /** check if tracked */
-        if (!(stage.fileStaged(filename) || head.blobExist(filename))){
+        if (!fileTracked(filename)){
             System.out.println("No reason to remove the file.");
             return;
         }
         /** unstaged from added */
         stage.removeAdded(filename);
         /** add it to removed if headcommit contains it */
-        stage.addRemoved(filename);
+        if (getHead().blobExist(filename)){
+            stage.addRemoved(filename);
+        }
         /** remove from working directory */
         removeWorkingFile(filename);
         /** save stage */
@@ -191,10 +189,10 @@ public class Repository {
     public void find(String message){
         List<String> plainFiles = plainFilenamesIn(COMMITS);
         Boolean found = false;
-        for (String fileName : plainFiles){
-            Commit commit = readObject(join(COMMITS, fileName), Commit.class);
+        for (String commitHash : plainFiles){
+            Commit commit = readObject(join(COMMITS, commitHash), Commit.class);
             if (commit.getMessage().equals(message)){
-                System.out.print(fileName);
+                System.out.print(String.format("commit %s", commit.getMessage()));
                 found = true;
             }
         }
@@ -294,8 +292,9 @@ public class Repository {
     }
 
     public void checkoutFile(String commitAbbID, String targetFileName){
-        String commitID = AbbInterpreter(commitAbbID);
+        String commitID = AbbInterpreter(commitAbbID.substring(0, 6));
         if (commitID.equals("not found")){
+            System.out.println("No commit with that id exists.");
             return;
         }
         Commit targetCommit = getCommit(commitID);
@@ -386,7 +385,7 @@ public class Repository {
     }
 
     public void reset(String commitAbbID){
-        String commitID = AbbInterpreter(commitAbbID);
+        String commitID = AbbInterpreter(commitAbbID.substring(0, 6));
         if (commitID.equals("not found")){
             return;
         }
