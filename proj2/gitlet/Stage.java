@@ -30,6 +30,10 @@ public class Stage implements Serializable, Dumpable{
         removed.add(filename);
     }
 
+    public void removeRemoved(String filename){
+        removed.remove(filename);
+    }
+
     public boolean hasStaged(){
         return !added.isEmpty() || !removed.isEmpty();
     }

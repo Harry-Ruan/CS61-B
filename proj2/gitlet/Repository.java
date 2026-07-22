@@ -97,6 +97,7 @@ public class Repository {
 
         if (workHash.equals(headCommit.getBlobHash(filename))) {
             stage.removeAdded(filename);
+            stage.removeRemoved(filename);
         } else {
             /* write */
             stage.add(filename, workHash);
@@ -192,7 +193,7 @@ public class Repository {
         for (String commitHash : plainFiles){
             Commit commit = readObject(join(COMMITS, commitHash), Commit.class);
             if (commit.getMessage().equals(message)){
-                System.out.print(String.format("commit %s", commit.getMessage()));
+                System.out.print(String.format("commit %s", commit.getHash()));
                 found = true;
             }
         }
@@ -291,9 +292,8 @@ public class Repository {
         System.out.println("");
     }
 
-    public void checkoutFile(String commitAbbID, String targetFileName){
-        String commitID = AbbInterpreter(commitAbbID.substring(0, 6));
-        if (commitID.equals("not found")){
+    public void checkoutFile(String commitID, String targetFileName){
+        if (!join(COMMITS, commitID).exists()){
             System.out.println("No commit with that id exists.");
             return;
         }
@@ -318,7 +318,7 @@ public class Repository {
         }
         /**  If that branch is the current branch */
         if (branchName.equals(readContentsAsString(HEAD))){
-            System.out.println(" No need to checkout the current branch.");
+            System.out.println("No need to checkout the current branch.");
             return;
         }
         checkoutCommit(readContentsAsString(join(BRANCHES, branchName)));
