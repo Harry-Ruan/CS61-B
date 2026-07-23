@@ -307,7 +307,7 @@ public class Repository {
     }
 
     public void checkoutHeadFile(String targetFile){
-        checkoutFile(getHeadHash().substring(0,6), targetFile);
+        checkoutFile(getHeadHash(), targetFile);
     }
 
     public void checkoutBranch(String branchName){
