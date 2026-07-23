@@ -156,9 +156,9 @@ public class Repository {
         /** add it to removed if headcommit contains it */
         if (getHead().blobExist(filename)){
             stage.addRemoved(filename);
+            /** remove from working directory */
+            removeWorkingFile(filename);
         }
-        /** remove from working directory */
-        removeWorkingFile(filename);
         /** save stage */
         stage.save();
     }
@@ -193,7 +193,7 @@ public class Repository {
         for (String commitHash : plainFiles){
             Commit commit = readObject(join(COMMITS, commitHash), Commit.class);
             if (commit.getMessage().equals(message)){
-                System.out.print(String.format("commit %s", commit.getHash()));
+                System.out.println(String.format("%s", commit.getHash()));
                 found = true;
             }
         }
@@ -341,7 +341,7 @@ public class Repository {
         }
         /** Takes all files in the commit at the head of the given branch, and puts them in the working directory, overwriting the versions of the files that are already there if they exist. */
         for (Map.Entry<String, String> blobEntry : targetBlobs.entrySet()){
-            writeContents(join(CWD, blobEntry.getValue()), readContents(join(BLOBS, blobEntry.getValue())));
+            writeContents(join(CWD, blobEntry.getKey()), readContents(join(BLOBS, blobEntry.getValue())));
         }
         /** Any files that are tracked in the current branch but are not present in the checked-out branch are deleted. */
         for (String currBlob : currBlobs.keySet()){
