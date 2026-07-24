@@ -384,8 +384,7 @@ public class Repository {
         join(BRANCHES, branchName).delete();
     }
 
-    public void reset(String commitAbbID){
-        String commitID = AbbInterpreter(commitAbbID.substring(0, 6));
+    public void reset(String commitID){
         if (commitID.equals("not found")){
             return;
         }
@@ -430,25 +429,28 @@ public class Repository {
             String branchBlobHash = branchBlob.getValue();
             /** 1. modified in the branch but not in the current -> checkout files */
             if (ancestorBlobs.containsKey(branchBlobName) && !branchBlobHash.equals(ancestorBlobs.get(branchBlobName)) && ancestorBlobs.get(branchBlobName).equals(currBlobs.get(branchBlobName))){
-                checkoutFile(branchHeadHash.substring(0, 6), branchBlobName);
+                checkoutFile(branchHeadHash, branchBlobName);
+                add(branchBlobName);
             }
             /** 2. current changed but not in branch -> stay the same */
-            /** 3. changes in the sam way -> stay the same */
+            /** 3. changes in the same way -> stay the same */
             /** 4. new file in current -> stay the same */
             /** 5. new file in branch -> checkout */
             else if (!ancestorBlobs.containsKey(branchBlobName) && !currBlobs.containsKey(branchBlobName)){
-                checkoutFile(branchHeadHash.substring(0, 6), branchBlobName);
+                checkoutFile(branchHeadHash, branchBlobName);
+                add(branchBlobName);
             }
             /** 7.removed in current and no change in branch -> stay the same */
             /** 8.both changed (not add or remove) -> merge */
             else if (ancestorBlobs.containsKey(branchBlobName) && currBlobs.containsKey(branchBlobName) && !ancestorBlobs.get(branchBlobName).equals(branchBlobHash) && !ancestorBlobs.get(branchBlobName).equals(currBlobs.get(branchBlobName))){
                 conflictMerge(currBlobs.get(branchBlobName), branchBlobHash, branchBlobName);
+                add(branchBlobName);
             }
             /** 9.curr and branch both add same new files -> merge */
             else if (!ancestorBlobs.containsKey(branchBlobName) && currBlobs.containsKey(branchBlobName) && !currBlobs.get(branchBlobName).equals(branchBlobHash)){
                 conflictMerge(currBlobs.get(branchBlobName), branchBlobHash, branchBlobName);
+                add(branchBlobName);
             }
-            add(branchBlobName);
         }
         for (Map.Entry<String, String> ancestorBlob : ancestorBlobs.entrySet()){
             String ancestorBlobName = ancestorBlob.getKey();
@@ -464,7 +466,7 @@ public class Repository {
         }
         Map<String, String> added = stage.getAdded();
         Set<String> removed = stage.getRemoved();
-        Commit newCommit = new Commit(String.format("Merged %s into %s", branchName, getHeadBranch()), new Date().toString(), getHeadHash(), branchHeadHash, (TreeMap<String, String>) currBlobs);
+        Commit newCommit = new Commit(String.format("Merged %s into %s.", branchName, getHeadBranch()), getTime(), getHeadHash(), branchHeadHash, (TreeMap<String, String>) currBlobs);
         /** for every files in added, add then to blobs */
         for (Map.Entry<String, String> addedEntry : added.entrySet()) {
             /** if existed, override. if not, write new */
