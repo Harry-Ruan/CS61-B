@@ -458,6 +458,11 @@ public class Repository {
             if (!branchBlobs.containsKey(ancestorBlobName) && currBlobs.containsKey(ancestorBlobName) && ancestorBlobs.get(ancestorBlobName).equals(currBlobs.get(ancestorBlobName))){
                 rm(ancestorBlobName);
             }
+            /** 10.removed in given and change in current -> merge */
+            if (!branchBlobs.containsKey(ancestorBlobName) && currBlobs.containsKey(ancestorBlobName) && !ancestorBlobs.get(ancestorBlobName).equals(currBlobs.get(ancestorBlobName))){
+                conflictMerge(currBlobs.get(ancestorBlobName), "", ancestorBlobName);
+                add(ancestorBlobName);
+            }
         }
         /** get stage and check if staged  */
         Stage stage = getStage();
@@ -484,9 +489,15 @@ public class Repository {
     }
 
     private void conflictMerge(String currBlobHash, String branchBlobHash, String commonName) {
-        String currBlob = readContentsAsString(join(BLOBS, currBlobHash));
-        String branchBlob = readContentsAsString(join(BLOBS, branchBlobHash));
-        writeContents(join(CWD, commonName), "<<<<<<< HEAD\n", currBlob, "\n", "=======\n", branchBlob, "\n", ">>>>>>>");
+        String currBlob = "";
+        String branchBlob = "";
+        if (!currBlobHash.equals("")){
+            currBlob = readContentsAsString(join(BLOBS, currBlobHash));
+        }
+        if (!branchBlobHash.equals("")){
+            branchBlob = readContentsAsString(join(BLOBS, branchBlobHash));
+        }
+        writeContents(join(CWD, commonName), "<<<<<<< HEAD\n", currBlob, "=======\n", branchBlob, ">>>>>>>");
         System.out.println("Encountered a merge conflict.");
     }
 

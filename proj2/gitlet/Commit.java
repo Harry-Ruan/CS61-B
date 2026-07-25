@@ -115,7 +115,7 @@ public class Commit implements Serializable, Dumpable{
                            "Merge: %s %s\n" +
                            "Date: %s\n" +
                            "%s\n" +
-                            "\n", hash, parent.substring(0, 6), sideParent.substring(0, 6), timestamp, message
+                            "\n", hash, parent.substring(0, 7), sideParent.substring(0, 7), timestamp, message
            );
         }
     }
