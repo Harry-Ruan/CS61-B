@@ -1,5 +1,7 @@
 package gitlet;
 
+import org.antlr.v4.runtime.misc.Pair;
+
 import java.io.File;
 import static gitlet.Utils.*;
 import static gitlet.Utils.readContents;
@@ -413,8 +415,8 @@ public class Repository {
         Commit branchHead = getCommit(branchHeadHash);
         Map<String, String> branchBlobs = branchHead.getBlobsCopy();
         /** get common ancestor */
-        Commit ancestor = getCommonAncestor(currHead, branchHead);
-        Map<String, String> ancestorBlobs = ancestor.getBlobsCopy();
+        String ancestor = getCommonAncestor(currHead.getHash(), branchHead.getHash());
+        Map<String, String> ancestorBlobs = getCommit(ancestor).getBlobsCopy();
         /** If the split point is the same commit as the given branch -> do nothing*/
         if (branchHead.equals(ancestor)){
             System.out.println("Given branch is an ancestor of the current branch.");
@@ -423,6 +425,15 @@ public class Repository {
         if (currHead.equals(ancestor)){
             checkoutBranch(branchName);
             System.out.println("Current branch fast-forwarded.");
+        }
+        /** untracked check */
+        for (String workFileName : plainFilenamesIn(CWD)){
+            if (!fileTracked(workFileName)){
+                if (fileWillBeOverwritten(ancestorBlobs, branchBlobs, currBlobs, workFileName)){
+                    System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                    return;
+                }
+            }
         }
         for (Map.Entry<String, String> branchBlob : branchBlobs.entrySet()){
             String branchBlobName = branchBlob.getKey();
@@ -501,26 +512,50 @@ public class Repository {
         System.out.println("Encountered a merge conflict.");
     }
 
-    private Commit getCommonAncestor(Commit commit1, Commit commit2){
-        HashSet<String> ancestors1 = new HashSet<>();
-        Commit cursor1 = commit1;
-        Commit cursor2 = commit2;
-        while(true){
-            ancestors1.add(cursor1.getHash());
-            if (!cursor1.parentExist()){
-                break;
+    private String getCommonAncestor(String commit1Hash, String commit2Hash){
+        Map<String, Integer> aDistances = new HashMap<>();
+        Queue<String> queueA = new LinkedList<>();
+
+        queueA.add(commit1Hash);
+        aDistances.put(commit1Hash, 0);
+
+        while(!queueA.isEmpty()){
+            String currHash = queueA.poll();
+            Commit curr = getCommit(currHash);
+            int dist = aDistances.get(curr);
+            List<String> parents = curr.getParents();
+            for (String parent : parents) {
+                if (!aDistances.containsKey(parent)) {
+                    aDistances.put(parent, dist + 1);
+                    queueA.add(parent);
+                }
             }
-            cursor1 = cursor1.getParent();
         }
-        while(true){
-            if (ancestors1.contains(cursor2.getHash())){
-                return cursor2;
+
+        Queue<String> queueB = new LinkedList<>();
+        LinkedList<String> visitedB = new LinkedList<>();
+        queueB.add(commit2Hash);
+        visitedB.add(commit2Hash);
+        while(!queueB.isEmpty()){
+            String currHash = queueB.poll();
+            if (aDistances.containsKey(currHash)){
+                return currHash;
             }
-            if (!cursor2.parentExist()){
-                return null;
+            Commit curr = getCommit(currHash);
+            List<String> parents = curr.getParents();
+            for (String parent :parents){
+                if (!visitedB.contains(parent)){
+                    queueB.add(parent);
+                    visitedB.add(parent);
+                }
             }
-            cursor2 = cursor2.getParent();
         }
+        return "";
+    }
+
+    private boolean fileWillBeOverwritten(Map ancestorBlobs, Map branchBlobs, Map currBlobs, String workFileName){
+        /** 5. new file in branch -> checkout */
+        return (!ancestorBlobs.containsKey(workFileName) && !currBlobs.containsKey(workFileName) && branchBlobs.containsKey(workFileName));
     }
 
     public boolean fileTracked(String filename){

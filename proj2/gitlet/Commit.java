@@ -87,12 +87,14 @@ public class Commit implements Serializable, Dumpable{
         return fromFile(parent);
     }
 
+    public List<String> getParents(){return List.of(parent, sideParent);}
+
     public String getParentName(){
         return parent;
     }
 
     public Boolean parentExist(){
-        return (!parent.equals(""));
+        return (!parent.equals("") || !sideParent.equals(""));
     }
 
     public String toString(String hash){
