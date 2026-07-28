@@ -1,6 +1,5 @@
 package gitlet;
 
-import org.antlr.v4.runtime.misc.Pair;
 
 import java.io.File;
 import static gitlet.Utils.*;
@@ -522,10 +521,10 @@ public class Repository {
         while(!queueA.isEmpty()){
             String currHash = queueA.poll();
             Commit curr = getCommit(currHash);
-            int dist = aDistances.get(curr);
+            int dist = aDistances.get(currHash);
             List<String> parents = curr.getParents();
             for (String parent : parents) {
-                if (!aDistances.containsKey(parent)) {
+                if (!aDistances.containsKey(parent) && !parent.equals("")) {
                     aDistances.put(parent, dist + 1);
                     queueA.add(parent);
                 }
@@ -544,7 +543,7 @@ public class Repository {
             Commit curr = getCommit(currHash);
             List<String> parents = curr.getParents();
             for (String parent :parents){
-                if (!visitedB.contains(parent)){
+                if (!visitedB.contains(parent) && !parent.equals("")){
                     queueB.add(parent);
                     visitedB.add(parent);
                 }
