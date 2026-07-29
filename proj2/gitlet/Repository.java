@@ -293,7 +293,8 @@ public class Repository {
         System.out.println("");
     }
 
-    public void checkoutFile(String commitID, String targetFileName){
+    public void checkoutFile(String commitAbbID, String targetFileName){
+        String commitID = AbbInterpreter(commitAbbID);
         if (!join(COMMITS, commitID).exists()){
             System.out.println("No commit with that id exists.");
             return;
@@ -356,6 +357,9 @@ public class Repository {
     }
 
     private String AbbInterpreter(String commitAbbID){
+        if (commitAbbID.length() == 20){
+            return commitAbbID;
+        }
         for (String commit : plainFilenamesIn(COMMITS)) {
             if (commit.startsWith(commitAbbID)) {
                 return commit;
@@ -363,6 +367,10 @@ public class Repository {
         }
         System.out.println("No commit with that id exists.");
         return "not found";
+    }
+
+    private static int getLength(String commitAbbID) {
+        return commitAbbID.length();
     }
 
     public void branch(String branchName){
@@ -386,7 +394,8 @@ public class Repository {
     }
 
     public void reset(String commitID){
-        if (commitID.equals("not found")){
+        if (!join(COMMITS, commitID).exists()){
+            System.out.println("No commit with that id exists.");
             return;
         }
         checkoutCommit(commitID);
