@@ -357,7 +357,7 @@ public class Repository {
     }
 
     private String AbbInterpreter(String commitAbbID){
-        if (commitAbbID.length() == 20){
+        if (commitAbbID.length() == 40){
             return commitAbbID;
         }
         for (String commit : plainFilenamesIn(COMMITS)) {
