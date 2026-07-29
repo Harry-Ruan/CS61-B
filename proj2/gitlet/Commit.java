@@ -62,7 +62,8 @@ public class Commit implements Serializable, Dumpable{
     }
 
     public boolean blobExist(String filename){
-        return blobs.containsKey(filename);
+        Map<String, String> checkBlobs = blobs;
+        return checkBlobs.containsKey(filename);
     }
 
     public String getBlobHash(String filename){

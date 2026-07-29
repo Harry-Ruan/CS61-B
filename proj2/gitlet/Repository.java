@@ -406,6 +406,7 @@ public class Repository {
         /** check if any staged */
         if (getStage().hasStaged()){
             System.out.println("You have uncommitted changes.");
+            return;
         }
         /** check branch exists */
         if (!join(BRANCHES, branchName).exists()){
@@ -592,7 +593,8 @@ public class Repository {
     }
 
     private String getHeadBranch(){
-        return readContentsAsString(HEAD);
+        String headBranch = readContentsAsString(HEAD);
+        return headBranch;
     }
 
     private String getTime(){
