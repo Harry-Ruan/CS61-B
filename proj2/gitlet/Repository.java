@@ -204,6 +204,10 @@ public class Repository {
     }
 
     public void status(){
+        if (!initialized()){
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
+        }
         printCommon();
         printUnstaged();
         printUntracked();
@@ -418,22 +422,27 @@ public class Repository {
             return;
         }
         /** get both commits */
-        Commit currHead = getCommit(getHeadHash());
+        String currHeadHash = getHeadHash();
+        Commit currHead = getCommit(currHeadHash);
         Map<String, String> currBlobs = currHead.getBlobsCopy();
         String branchHeadHash = readContentsAsString(join(BRANCHES, branchName));
         Commit branchHead = getCommit(branchHeadHash);
         Map<String, String> branchBlobs = branchHead.getBlobsCopy();
         /** get common ancestor */
-        String ancestor = getCommonAncestor(currHead.getHash(), branchHead.getHash());
-        Map<String, String> ancestorBlobs = getCommit(ancestor).getBlobsCopy();
+        String ancestorHash = getCommonAncestor(currHeadHash, branchHeadHash);
+        Map<String, String> ancestorBlobs = getCommit(ancestorHash).getBlobsCopy();
+        /** check if merge conflicted */
+        Boolean mergeConflicted = false;
         /** If the split point is the same commit as the given branch -> do nothing*/
-        if (branchHead.equals(ancestor)){
+        if (branchHeadHash.equals(ancestorHash)){
             System.out.println("Given branch is an ancestor of the current branch.");
+            return;
         }
         /** If the split point is the current branch -> checkout */
-        if (currHead.equals(ancestor)){
+        if (currHeadHash.equals(ancestorHash)){
             checkoutBranch(branchName);
             System.out.println("Current branch fast-forwarded.");
+            return;
         }
         /** untracked check */
         for (String workFileName : plainFilenamesIn(CWD)){
@@ -465,11 +474,13 @@ public class Repository {
             else if (ancestorBlobs.containsKey(branchBlobName) && currBlobs.containsKey(branchBlobName) && !ancestorBlobs.get(branchBlobName).equals(branchBlobHash) && !ancestorBlobs.get(branchBlobName).equals(currBlobs.get(branchBlobName))){
                 conflictMerge(currBlobs.get(branchBlobName), branchBlobHash, branchBlobName);
                 add(branchBlobName);
+                mergeConflicted = true;
             }
             /** 9.curr and branch both add same new files -> merge */
             else if (!ancestorBlobs.containsKey(branchBlobName) && currBlobs.containsKey(branchBlobName) && !currBlobs.get(branchBlobName).equals(branchBlobHash)){
                 conflictMerge(currBlobs.get(branchBlobName), branchBlobHash, branchBlobName);
                 add(branchBlobName);
+                mergeConflicted = true;
             }
         }
         for (Map.Entry<String, String> ancestorBlob : ancestorBlobs.entrySet()){
@@ -482,6 +493,7 @@ public class Repository {
             if (!branchBlobs.containsKey(ancestorBlobName) && currBlobs.containsKey(ancestorBlobName) && !ancestorBlobs.get(ancestorBlobName).equals(currBlobs.get(ancestorBlobName))){
                 conflictMerge(currBlobs.get(ancestorBlobName), "", ancestorBlobName);
                 add(ancestorBlobName);
+                mergeConflicted = true;
             }
         }
         /** get stage and check if staged  */
@@ -504,6 +516,9 @@ public class Repository {
         }
         newCommit.saveCommit(newCommit.getHash());
         saveHead(newCommit.getHash(), getHeadBranch());
+        if (mergeConflicted){
+            System.out.println("Encountered a merge conflict.");
+        }
         stage.clear();
         stage.save();
     }
@@ -518,7 +533,6 @@ public class Repository {
             branchBlob = readContentsAsString(join(BLOBS, branchBlobHash));
         }
         writeContents(join(CWD, commonName), "<<<<<<< HEAD\n", currBlob, "=======\n", branchBlob, ">>>>>>>");
-        System.out.println("Encountered a merge conflict.");
     }
 
     private String getCommonAncestor(String commit1Hash, String commit2Hash){

@@ -16,6 +16,8 @@ public class Main {
         }
         String firstArg = args[0];
         switch(firstArg) {
+            case "":
+                System.out.println("Please enter a command.");
             case "init":
                 // TODO: handle the `init` command
                 gitletRepo.init();
@@ -30,8 +32,7 @@ public class Main {
                 break;
             case "rm":
                 /* If the file is neither staged nor tracked by the head commit */
-                String rmFilename = args[1];
-                gitletRepo.rm(rmFilename);
+                gitletRepo.rm(args[1]);
                 break;
             case "log":
                 gitletRepo.log();
@@ -74,6 +75,7 @@ public class Main {
             case "merge":
                 gitletRepo.merge(args[1]);
                 break;
+            default:System.out.println("No command with that name exists.");
         }
     }
 }
