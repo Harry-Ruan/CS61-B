@@ -14,10 +14,11 @@ public class Main {
         if (args == null){
             System.out.println("no input");
         }
+        if (args.equals("")){
+            System.out.println("Please enter a command.");
+        }
         String firstArg = args[0];
         switch(firstArg) {
-            case "":
-                System.out.println("Please enter a command.");
             case "init":
                 // TODO: handle the `init` command
                 gitletRepo.init();
