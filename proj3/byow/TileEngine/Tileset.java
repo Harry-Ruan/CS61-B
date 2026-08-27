@@ -33,6 +33,12 @@ public class Tileset {
     public static final TETile SAND = new TETile('▒', Color.yellow, Color.black, "sand");
     public static final TETile MOUNTAIN = new TETile('▲', Color.gray, Color.black, "mountain");
     public static final TETile TREE = new TETile('♠', Color.green, Color.black, "tree");
+    public static final TETile LIGHTON = new TETile('o', Color.WHITE, Color.BLUE, "light");
+    public static final TETile LIGHTOFF = new TETile('o', Color.WHITE, Color.black, "light");
+    public static final TETile LIGHTSUR1 = new TETile('·', new Color(128, 192, 128), new Color(70, 110, 220), "floor");
+    public static final TETile LIGHTSUR2 = new TETile('·', new Color(128, 192, 128), new Color(50, 85, 185), "floor");
+    public static final TETile LIGHTSUR3 = new TETile('·', new Color(128, 192, 128), new Color(35, 65, 150), "floor");
+    public static final TETile LIGHTSUR4 = new TETile('·', new Color(128, 192, 128), new Color(20, 45, 110), "floor");
 }
 
 
