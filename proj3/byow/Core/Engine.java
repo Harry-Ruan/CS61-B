@@ -21,7 +21,7 @@ public class Engine {
      * Method used for exploring a fresh world. This method should handle all inputs,
      * including inputs from the main menu.
      */
-    public void interactWithKeyboard() throws FileNotFoundException {
+    public void interactWithKeyboard() {
         TERenderer ter = new TERenderer();
         ter.initialize(WIDTH, HEIGHT);
         StdDraw.setPenColor(Color.white);
@@ -135,7 +135,7 @@ public class Engine {
      * @param input the input string to feed to your program
      * @return the 2D TETile[][] representing the state of the world
      */
-    public TETile[][] interactWithInputString(String input) throws FileNotFoundException {
+    public TETile[][] interactWithInputString(String input){
         int endIndex = 1;
         World world = null;
         String name = "";
@@ -181,7 +181,7 @@ public class Engine {
         return finalWorldFrame;
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
 
         Engine engine = new Engine();
 
@@ -196,14 +196,18 @@ public class Engine {
         ter.renderFrame(world1);
     }
 
-    public void save(World world) throws FileNotFoundException {
-        PrintWriter out = new PrintWriter("savefile.txt");
-        out.println(world.getSEED());
-        out.println(world.getPlayer().getX());
-        out.println(world.getPlayer().getY());
-        out.println(world.getPlayer().getHQ());
-        out.println(world.getPlayer().getName());
-        out.close();
+    public void save(World world){
+        try {
+            PrintWriter out = new PrintWriter("savefile.txt");
+            out.println(world.getSEED());
+            out.println(world.getPlayer().getX());
+            out.println(world.getPlayer().getY());
+            out.println(world.getPlayer().getHQ());
+            out.println(world.getPlayer().getName());
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public World load() {
