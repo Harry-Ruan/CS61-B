@@ -15,9 +15,9 @@ public class Main {
             Engine engine = new Engine();
             engine.interactWithInputString(args[1]);
             System.out.println(engine.toString());
-        // DO NOT CHANGE THESE LINES YET ;)
-        } else if (args.length == 2 && args[0].equals("-p")) { System.out.println("Coming soon."); } 
-        // DO NOT CHANGE THESE LINES YET ;)
+        } else if (args.length == 2 && args[0].equals("-p")) {
+            System.out.println("Playback mode is not implemented in this coursework version.");
+        }
         else {
             Engine engine = new Engine();
             engine.interactWithKeyboard();

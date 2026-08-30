@@ -7,23 +7,8 @@ import static gitlet.Utils.readContents;
 
 import java.util.*;
 
-// TODO: any imports you need here
-
-/** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
- *  does at a high level.
- *
- *  @author TODO
- */
+/** Manages Gitlet's working tree, object store, staging area, and branch refs. */
 public class Repository {
-    /**
-     * TODO: add instance variables here.
-     *
-     * List all instance variables of the Repository class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided two examples for you.
-     */
-
     /** The current working directory. */
     static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
@@ -40,8 +25,6 @@ public class Repository {
     static final File REFS = join(CWD, ".gitlet", "refs");
     /** branches */
     static final File BRANCHES = join(CWD, ".gitlet", "refs", "branches");
-    /** TODO: fill in the rest of this class. */
-
     public void init(){
         /** check if initialized */
         if (!initialized()){
@@ -116,6 +99,7 @@ public class Repository {
         /** check if staged */
         if (!stage.hasStaged()){
             System.out.println("No changes added to the commit.");
+            return;
         }
         /** check message */
         if (message.equals("")){

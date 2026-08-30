@@ -1,28 +1,13 @@
 package gitlet;
 
-// TODO: any imports you need here
-
 import java.io.File;
 import java.io.Serializable;
 import static gitlet.Utils.*;
 
 import java.util.*;
 
-/** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
- *  does at a high level.
- *
- *  @author TODO
- */
+/** A persistent snapshot of tracked filenames and their content-addressed blobs. */
 public class Commit implements Serializable, Dumpable{
-    /**
-     * TODO: add instance variables here.
-     *
-     * List all instance variables of the Commit class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided one example for `message`.
-     */
-
     static final File CWD = new File(System.getProperty("user.dir"));
     static final File COMMITS = join(CWD, ".gitlet", "commits");
     /** The message of this Commit. */
@@ -44,14 +29,11 @@ public class Commit implements Serializable, Dumpable{
         sideParent = s;
         blobs = b;
     }
-    /* TODO: fill in the rest of this class. */
-
     public String getHash(){
         return sha1(this.message, this.timestamp, this.parent, this.sideParent, this.blobs.toString());
     }
 
     public static Commit fromFile(String name) {
-        // TODO (hint: look at the Utils file)
         File commitName = join(COMMITS, name);
         Commit thisCommit = readObject(commitName, Commit.class);
         return thisCommit;
@@ -132,4 +114,3 @@ public class Commit implements Serializable, Dumpable{
         System.out.printf("size: %d%nparent: %s%n", blobs.size(), parent);
     }
 }
-

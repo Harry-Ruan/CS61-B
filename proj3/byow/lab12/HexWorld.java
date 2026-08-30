@@ -1,5 +1,4 @@
 package byow.lab12;
-import edu.neu.ccs.util.Hex;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -109,5 +108,4 @@ public class HexWorld {
         ter.renderFrame(HexWorld);
     }
 }
-
 
